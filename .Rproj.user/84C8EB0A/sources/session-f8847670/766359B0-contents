@@ -108,7 +108,7 @@ diagnosis(mod_s)
 
 ---
 # Question 11b: Results
-- The plots show the residuals, the density, and theoretical quantities.
+- The plots show the residuals, the density, and theoretical quantiles.
 The residuals show differences between the actual values of COG and the predicted values obtained from the regression equation
 
 - The density plot shows shape of the distribution by estimating the probability density function of the COG.

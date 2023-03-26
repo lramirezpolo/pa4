@@ -149,7 +149,7 @@ class: center, middle, inverse, title-slide
 
 ---
 # Question 11b: Results
-- The plots show the residuals, the density, and theoretical quantities.
+- The plots show the residuals, the density, and theoretical quantiles.
 The residuals show differences between the actual values of COG and the predicted values obtained from the regression equation
 
 - The density plot shows shape of the distribution by estimating the probability density function of the COG.
@@ -158,21 +158,6 @@ The residuals show differences between the actual values of COG and the predicte
 
 ---
 # Question 12: Assumptions
-
-
-```
-## 
-## 	Pearson's product-moment correlation
-## 
-## data:  data_assumptions$x and data_assumptions$y
-## t = -0.76443, df = 140, p-value = 0.4459
-## alternative hypothesis: true correlation is not equal to 0
-## 95 percent confidence interval:
-##  -0.2267905  0.1013316
-## sample estimates:
-##         cor 
-## -0.06447185
-```
 
 &lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
 Comment: It would not be appropriate because the two variables don't seem to be related, they are non-linear data. It is not possible to determine which is the dependent and the independent variable, and the correlation coefficient of -0.06 shows that there is no correlation in the data. This is due to violations in the assumptions for ordinary least squares regression, and more specifically linearity and homoscedasticity. 
