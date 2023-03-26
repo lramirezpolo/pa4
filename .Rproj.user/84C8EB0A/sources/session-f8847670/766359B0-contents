@@ -1,0 +1,130 @@
+---
+title: "PA 4 / DS4LING Spring 2024"
+subtitle: "⚔<br/>with xaringan"
+author: "Laura Ramirez"
+institute: "RStudio, PBC"
+date: "2023/3/23 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, rutgers, hygge, rutgers-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r, include = FALSE}
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(ds4ling)
+library(broom)
+library(kableExtra)
+```
+# Questions 1-6
+
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+##tidy data and save file
+data_fricatives <- read_csv(file = here("data_raw", "fricatives.csv")) %>% 
+  pivot_longer(cols = starts_with("s"), 
+      names_to = "phoneme", values_to = "score") %>% 
+      separate(col = phoneme, 
+           into = c('phoneme', 'measure'), 
+           sep = "_") %>% 
+  pivot_wider(names_from = "measure", values_from = "score") %>% 
+  write_csv(file = here("data_tidy", "fricatives_tidy.csv"))
+
+## Provide a table of descriptive statistics
+summary(data_fricatives) %>% 
+  knitr::kable()
+   
+
+```
+---
+# Question 7a
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+#Make a boxplot of center of gravity as a function of phoneme.
+ ggplot(data = data_fricatives) + 
+   geom_point(mapping = aes(x = phoneme, y = cog))
+
+```
+---
+# Question 7b
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+# In another slide, plot skewness as a function of phoneme. Use a statistical transformation (i.e., not a boxplot, but rather stat_summary()).
+ ggplot(data = data_fricatives, aes(phoneme, skewness)) + 
+   geom_point() + 
+   stat_summary(fun = "median", colour = "red", size = 2, geom = "point") +
+   stat_summary(fun = "mean", colour = "blue", size = 2, geom = "point") 
+
+```
+---
+# Question 8
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+#Fit a model that examines center of gravity as a function of skewness for the [s] segments (hint: you will have to transform the data). Make a table of the model summary. M
+data_fricatives_s <- read_csv(file = here("data_raw", "fricatives.csv")) %>% 
+  pivot_longer(cols = starts_with("s_"), names_to = "phoneme", values_to = "score") %>%   select(-c(sh_cog, sh_skewness))%>% 
+    separate(col = phoneme, 
+           into = c('phoneme', 'measure'), 
+           sep = "_") %>% 
+ pivot_wider(names_from = "measure", values_from = "score") 
+
+  mod_s <- lm(cog ~ skewness, data = data_fricatives_s) 
+  mod_s_sum <- summary(mod_s)
+  tidy(mod_s_sum) %>% 
+  kbl(caption = "Model for CoG as a function of Skewness for S") %>%
+  kable_paper("hover", full_width = F)
+  
+  
+```
+---
+# Question 9
+
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+## Make a scatter plot that illustrates the relationship in (8).
+ggplot(data = data_fricatives_s) + 
+   geom_point(mapping = aes(x = skewness, y = cog)) +
+   geom_smooth(mapping = aes(x = skewness, y = cog)) +
+   ggtitle("CoG as a function of Skewness for S")
+```
+---
+# Question 10
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 4, fig.retina = 2, dpi = 300}
+#Check model diagnostics (make plots).
+diagnosis(mod_s)
+
+```
+
+
+---
+# Question 11a: Results
+
+
+- Our model examines center of gravity (COG) -dependent variable- as a function of skewness -independent variable- for the [s] segments. COG is a measure of the central tendency of a distribution, while skewness is a measure of the asymmetry of the distribution. The intercept is at 8027.2, so when skewness is equal to 0, the predicted value of cog is 8027.2. Every 1 unit increase of skewness is associated with an increase of 3029.1 of cog (slope).
+
+- A p value of 7.69e-10 shows that the Intercept estimate is not equal to 0 and therefore statistically significant as the p-value is much smaller than 0.05.
+
+- The multiple R-squared is 0.8836, which means that approximately 88% of the variation in cog is explained by the variation in skewness.
+
+---
+# Question 11b: Results
+- The plots show the residuals, the density, and theoretical quantities.
+The residuals show differences between the actual values of COG and the predicted values obtained from the regression equation
+
+- The density plot shows shape of the distribution by estimating the probability density function of the COG.
+
+- Finally, the QQ-plot shows two datasets plotted against each other. Since the datasets come from the same distribution, the points on the plot roughly form a straight line. 
+
+---
+# Question 12: Assumptions
+
+```{r, echo = FALSE, message = FALSE, out.width="100%", fig.height = 3, fig.retina = 2, dpi = 300}
+##In a new slide, load the assumptions.csv dataset. Make a scatterplot. Explain in a few ##sentences why it would not be appropriate to fit a model to this data.
+data_assumptions <- read_csv(file = here("data_raw", "assumptions.csv")) 
+   ggplot(data = data_assumptions) + 
+   geom_point(mapping = aes(x = x, y = y))
+
+```
+Comment: It would not be appropriate because the two variables don't seem to be related, they are non-linear data. It is not possible to determine which is the dependent and the independent variable, and the correlation coefficient of -0.06 shows that there is no correlation in the data. This is due to violations in the assumptions for ordinary least squares regression, and more specifically linearity and homoscedasticity. 
+ 
+
